@@ -1,7 +1,7 @@
 # tennis-api-backend
 This Spring Boot application defines the REST endpoints of the API. Data persistence is implemented using PostgreSQL, and JdbcTemplate is used to work with the database.
 
-Maven is used for project management. Heroku was used for deployment of the application and the database. As recommended by Heroku, this project was written in Java 8.
+Maven is used for project management. Heroku was used for deployment of the application and the database. As recommended by Heroku, this project was compiled with Java 8.
 
 Postgres database was setup using the available CSV files from Jeff Sackmann (see license below). Simple changes to columns were made for purposes of relational design.
 
