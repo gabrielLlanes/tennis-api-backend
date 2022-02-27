@@ -1,6 +1,8 @@
 # tennis-api-backend
 This Spring Boot application defines the REST endpoints of the API. Data persistence is implemented using PostgreSQL, and JdbcTemplate is used to work with the database.
+
 Heroku was used for deployment of the application and the database.
+
 Postgres database was setup using the available CSV files from Jeff Sackmann (see license below). Simple changes to columns were made for purposes of relational design.
 
 # License
