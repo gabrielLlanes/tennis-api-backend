@@ -75,10 +75,7 @@ public class TennisService {
     }
 
     public void calculateAllStatistics() {
-        long t1 = new java.util.Date().getTime();
         tennisRepo.calculateAllStatistics();
-        long t2 = new java.util.Date().getTime();
-        System.out.println("" + (t2-t1) + " ms");
     }
 
     public ArrayList<String> getAllPlayerNames() {

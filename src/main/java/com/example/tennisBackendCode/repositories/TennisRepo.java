@@ -140,16 +140,18 @@ public class TennisRepo {
 
     public void calculateAllStatistics() {
         new ArrayList<String>(getAllPlayerNames()).forEach(pName -> {
-            String sqlNumberMatches = "select * from atp_match_overview where winner_name ilike ? or loser_name ilike ?";
+            String sqlNumberMatches = "select * from atp_match_overview where winner_name = ? or loser_name = ?";
             if (jdbc.query(sqlNumberMatches, new MatchRowMapper(), pName,pName).size() < 20) {}
-            else {String sql = "insert into all_statistics\n" +
+            else {String sql = "delete from all_statistics;\ninsert into all_statistics\n" +
                     "\n" +
                     "with indwins as\n" +
-                    "(select * from atp_match where winner_name ilike ?),\n" +
+                    "(select * from atp_match where winner_name = ?),\n" +
                     "indlosses as\n" +
-                    "(select * from atp_match where loser_name ilike ?)\n" +
+                    "(select * from atp_match where loser_name = ?)\n" +
                     "\n" +
                     "select\n" +
+                    "(select count(*) from atp_match_overview where winner_name = ?),\n" +
+                    "(select count(*) from atp_match_overview where loser_name = ?),\n" +
                     "((select sum(w_ace) from indwins) + (select sum(l_ace) from indlosses))::integer,\n" +
                     "\n" +
                     "((select sum(w_df) from indwins) + (select sum(l_df) from indlosses))::integer,\n" +
@@ -237,8 +239,8 @@ public class TennisRepo {
                     "\n" +
                     "?,\n" +
                     "(select player_id from atp_player play\n" +
-                    " where play.player_name ilike ?)";
-                jdbc.update(sql, pName, pName,pName,pName);}
+                    " where play.player_name = ?)";
+                jdbc.update(sql, pName, pName,pName,pName,pName,pName);}
         });
     }
 

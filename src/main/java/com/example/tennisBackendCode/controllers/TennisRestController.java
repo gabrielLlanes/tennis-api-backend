@@ -49,7 +49,9 @@ public class TennisRestController {
 
     @GetMapping("/api/calculateallstats")
     public String calculateAllStatistics() {
+        java.util.Date before = new java.util.Date();
         tennisService.calculateAllStatistics();
-        return "Calculated statistics and updated database.";
+        java.util.Date after = new java.util.Date();
+        return String.format("Calculated statistics and updated database in %d ms.", after.getTime() - before.getTime());
     }
 }
