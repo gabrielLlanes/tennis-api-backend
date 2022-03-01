@@ -139,7 +139,7 @@ public class TennisRepo {
     }
 
     public void calculateAllStatistics() {
-        jdbc.update("delete from all_statistics;");
+        if(jdbc.queryForList("select * from all_statistics;").size() != 0) {return;}
         new ArrayList<String>(getAllPlayerNames()).forEach(pName -> {
             String sqlNumberMatches = "select * from atp_match_overview where winner_name = ? or loser_name = ?";
             if (jdbc.query(sqlNumberMatches, new MatchRowMapper(), pName,pName).size() < 20) {}
