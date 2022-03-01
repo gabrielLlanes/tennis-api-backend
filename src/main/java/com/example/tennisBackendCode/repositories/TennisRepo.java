@@ -139,10 +139,11 @@ public class TennisRepo {
     }
 
     public void calculateAllStatistics() {
+        jdbc.update("delete from all_statistics;");
         new ArrayList<String>(getAllPlayerNames()).forEach(pName -> {
             String sqlNumberMatches = "select * from atp_match_overview where winner_name = ? or loser_name = ?";
             if (jdbc.query(sqlNumberMatches, new MatchRowMapper(), pName,pName).size() < 20) {}
-            else {String sql = "delete from all_statistics;\ninsert into all_statistics\n" +
+            else {String sql = "insert into all_statistics\n" +
                     "\n" +
                     "with indwins as\n" +
                     "(select * from atp_match where winner_name = ?),\n" +
