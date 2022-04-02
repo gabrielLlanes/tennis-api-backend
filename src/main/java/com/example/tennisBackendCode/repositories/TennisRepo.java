@@ -2,8 +2,10 @@ package com.example.tennisBackendCode.repositories;
 
 import com.example.tennisBackendCode.miscTools.rowMappers.MatchRowMapper;
 import com.example.tennisBackendCode.miscTools.rowMappers.PlayerNameMapper;
+import com.example.tennisBackendCode.miscTools.rowMappers.PlayerRankingRowMapper;
 import com.example.tennisBackendCode.miscTools.rowMappers.PlayerStatisticsRowMapper;
 import com.example.tennisBackendCode.model.Match;
+import com.example.tennisBackendCode.model.PlayerRank;
 import com.example.tennisBackendCode.model.PlayerStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -243,6 +245,10 @@ public class TennisRepo {
                     " where play.player_name = ?)";
                 jdbc.update(sql, pName, pName,pName,pName,pName,pName);}
         });
+    }
+    public List<PlayerRank> getRankings() {
+        String sql = "select * from atp_ranking";
+        return jdbc.query(sql, new PlayerRankingRowMapper());
     }
 
     public ArrayList<String> getAllPlayerNames() {

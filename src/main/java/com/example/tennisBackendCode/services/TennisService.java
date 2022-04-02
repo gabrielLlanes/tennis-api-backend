@@ -4,6 +4,7 @@ import com.example.tennisBackendCode.miscTools.comparators.SingleTournamentMatch
 import com.example.tennisBackendCode.model.Match;
 import com.example.tennisBackendCode.model.PlayerActivitySingleTournament;
 import com.example.tennisBackendCode.model.PlayerActivitySingleTournamentMatch;
+import com.example.tennisBackendCode.model.PlayerRank;
 import com.example.tennisBackendCode.model.PlayerStatistics;
 import com.example.tennisBackendCode.repositories.TennisRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,9 @@ public class TennisService {
             singleTournamentActivity.getMatches().sort(new SingleTournamentMatchComparator());
         });
         return playerActivity;
+    }
+    public List<PlayerRank> getRankings() {
+        return tennisRepo.getRankings();
     }
 
     public void calculateAllStatistics() {

@@ -3,6 +3,7 @@ package com.example.tennisBackendCode.controllers;
 import com.example.tennisBackendCode.miscTools.requestBodies.Head2Head;
 import com.example.tennisBackendCode.model.Match;
 import com.example.tennisBackendCode.model.PlayerActivitySingleTournament;
+import com.example.tennisBackendCode.model.PlayerRank;
 import com.example.tennisBackendCode.model.PlayerStatistics;
 import com.example.tennisBackendCode.services.TennisService;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,10 @@ public class TennisRestController {
     @GetMapping("/api/playeractivity")
     public List<PlayerActivitySingleTournament> getPlayerActivity(@RequestParam("Player Name") String playerName) {
         return tennisService.getPlayerActivity(playerName);
+    }
+    @GetMapping("/api/rankings")
+    public List<PlayerRank> getRankings() {
+        return tennisService.getRankings();
     }
 
     @GetMapping("/api/playernames")
