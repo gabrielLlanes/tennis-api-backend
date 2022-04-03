@@ -1,22 +1,32 @@
 package com.example.tennisBackendCode.repositories;
 
+import com.example.tennisBackendCode.miscTools.rowMappers.DailyMatchRowMapper;
 import com.example.tennisBackendCode.miscTools.rowMappers.MatchRowMapper;
 import com.example.tennisBackendCode.miscTools.rowMappers.PlayerNameMapper;
 import com.example.tennisBackendCode.miscTools.rowMappers.PlayerRankingRowMapper;
 import com.example.tennisBackendCode.miscTools.rowMappers.PlayerStatisticsRowMapper;
+import com.example.tennisBackendCode.model.DailyMatch;
+import com.example.tennisBackendCode.model.DailyMatchID;
 import com.example.tennisBackendCode.model.Match;
+import com.example.tennisBackendCode.model.Player;
 import com.example.tennisBackendCode.model.PlayerRank;
 import com.example.tennisBackendCode.model.PlayerStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Repository
 public class TennisRepo {
     private final JdbcTemplate jdbc;
+    private Logger logger = Logger.getLogger("Repo");
 
     @Autowired
     public TennisRepo(JdbcTemplate jdbc) {this.jdbc = jdbc;}
@@ -250,9 +260,48 @@ public class TennisRepo {
         String sql = "select * from atp_ranking";
         return jdbc.query(sql, new PlayerRankingRowMapper());
     }
+    public List<DailyMatch> getDailyMatchesGet(java.sql.Date date) {
+        String sql = "select * from daily_matches where tourney_date = ?";
+        List<DailyMatch> l = jdbc.query(sql, new DailyMatchRowMapper(), date);
+        return l;
+    }
+    public List<DailyMatch> getDailyMatchesPost(DailyMatchID[] matches, java.sql.Date date) {
+        logger.info(String.format("%d", matches.length));
+        logger.info(date.toString());
+        logger.info(Arrays.toString(matches));
+        for(DailyMatchID match : matches) {
+            String sql = "insert into daily_matches values (?, ?, ?, ?, ?, ?);";
+            DailyMatch dm = convert(match);
+            logger.info(dm.toString());
+            jdbc.update(sql, dm.getMatchDate(), dm.getTourneyName(), dm.getHomePlayer(), dm.getAwayPlayer(), dm.getWinnerName(), dm.getScore());
+        }
+        List<DailyMatch> l = jdbc.query("select * from daily_matches where tourney_date = ?", new DailyMatchRowMapper(), date);
+        return l;
+    }
+    private DailyMatch convert(DailyMatchID dmID) {
+        String queryForNameByID = "select player_name from atp_player_2 where player_id = ?";
+        RowMapper<String> idToNameMapper = new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString(1);
+            }
+        };
+        String homePlayer = jdbc.query(queryForNameByID, idToNameMapper, dmID.getHomeID()).get(0);
+        String awayPlayer = jdbc.query(queryForNameByID, idToNameMapper, dmID.getAwayID()).get(0);
+        String winnerName = jdbc.query(queryForNameByID, idToNameMapper, dmID.getWinnerID()).get(0);
+
+        return new DailyMatch(dmID.getMatchDate(), dmID.getTourneyName(), homePlayer, awayPlayer, winnerName, dmID.getScore());
+    }
 
     public ArrayList<String> getAllPlayerNames() {
         return (ArrayList<String>)jdbc.query("select player_name from atp_player", new PlayerNameMapper());
+    }
+
+    public void insertPlayers(Player[] players) {
+        for(Player player : players) {
+            String insertPlayerSQL = "insert into atp_player_2 values (?, ?, ?);";
+            jdbc.update(insertPlayerSQL, player.getPlayerID(), player.getPlayerName(), player.getCountry());
+        }
     }
 
 

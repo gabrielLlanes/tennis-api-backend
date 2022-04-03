@@ -1,13 +1,17 @@
 package com.example.tennisBackendCode.controllers;
 
 import com.example.tennisBackendCode.miscTools.requestBodies.Head2Head;
+import com.example.tennisBackendCode.model.DailyMatch;
+import com.example.tennisBackendCode.model.DailyMatchID;
 import com.example.tennisBackendCode.model.Match;
+import com.example.tennisBackendCode.model.Player;
 import com.example.tennisBackendCode.model.PlayerActivitySingleTournament;
 import com.example.tennisBackendCode.model.PlayerRank;
 import com.example.tennisBackendCode.model.PlayerStatistics;
 import com.example.tennisBackendCode.services.TennisService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -45,6 +49,22 @@ public class TennisRestController {
     @GetMapping("/api/rankings")
     public List<PlayerRank> getRankings() {
         return tennisService.getRankings();
+    }
+
+    @PostMapping("/api/insertplayers")
+    public void insertPlayers(@RequestBody Player[] players) {
+        tennisService.insertPlayers(players);
+    }
+    @GetMapping("/api/dailysummary")
+    public List<DailyMatch> getDailyMatches(@RequestParam("date") java.sql.Date date) {
+        return tennisService.getDailyMatchesGet(date);
+    }
+    @PostMapping("/api/dailysummary")
+    public List<DailyMatch> getDailyMatches(@RequestBody DailyMatchID[] matches, @RequestParam("date") java.sql.Date date) {
+        for(DailyMatchID match : matches) {
+            match.setMatchDate(date);
+        }
+        return tennisService.getDailyMatchesPost(matches, date);
     }
 
     @GetMapping("/api/playernames")
