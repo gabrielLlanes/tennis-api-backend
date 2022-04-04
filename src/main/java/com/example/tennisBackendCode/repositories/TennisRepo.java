@@ -274,7 +274,8 @@ public class TennisRepo {
             String sql = "insert into daily_matches values (?, ?, ?, ?, ?, ?);";
             DailyMatch dm = convert(match);
             logger.info(dm.toString());
-            jdbc.update(sql, dm.getMatchDate(), dm.getTourneyName(), dm.getHomePlayer(), dm.getAwayPlayer(), dm.getWinnerName(), dm.getScore());
+            //update only if valid match returned
+            if(!(dm == null)) jdbc.update(sql, dm.getMatchDate(), dm.getTourneyName(), dm.getHomePlayer(), dm.getAwayPlayer(), dm.getWinnerName(), dm.getScore());
         }
         List<DailyMatch> l = jdbc.query("select * from daily_matches where tourney_date = ?", new DailyMatchRowMapper(), date);
         return l;
@@ -287,9 +288,16 @@ public class TennisRepo {
                 return rs.getString(1);
             }
         };
-        String homePlayer = jdbc.query(queryForNameByID, idToNameMapper, dmID.getHomeID()).get(0);
-        String awayPlayer = jdbc.query(queryForNameByID, idToNameMapper, dmID.getAwayID()).get(0);
-        String winnerName = jdbc.query(queryForNameByID, idToNameMapper, dmID.getWinnerID()).get(0);
+        List<String> homeQuery = jdbc.query(queryForNameByID, idToNameMapper, dmID.getHomeID());
+        List<String> awayQuery = jdbc.query(queryForNameByID, idToNameMapper, dmID.getAwayID());
+        List<String> winnerQuery = jdbc.query(queryForNameByID, idToNameMapper, dmID.getWinnerID());
+
+        if(homeQuery.size() == 0 || awayQuery.size() == 0 || winnerQuery.size() == 0) {
+            return null;
+        }
+        String homePlayer = homeQuery.get(0);
+        String awayPlayer = awayQuery.get(0);
+        String winnerName = winnerQuery.get(0);
 
         return new DailyMatch(dmID.getMatchDate(), dmID.getTourneyName(), homePlayer, awayPlayer, winnerName, dmID.getScore());
     }
