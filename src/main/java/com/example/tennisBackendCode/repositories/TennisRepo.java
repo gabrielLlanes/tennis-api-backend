@@ -273,7 +273,6 @@ public class TennisRepo {
         for(DailyMatchID match : matches) {
             String sql = "insert into daily_matches values (?, ?, ?, ?, ?, ?);";
             DailyMatch dm = convert(match);
-            logger.info(dm.toString());
             //update only if valid match returned
             if(!(dm == null)) jdbc.update(sql, dm.getMatchDate(), dm.getTourneyName(), dm.getHomePlayer(), dm.getAwayPlayer(), dm.getWinnerName(), dm.getScore());
         }
