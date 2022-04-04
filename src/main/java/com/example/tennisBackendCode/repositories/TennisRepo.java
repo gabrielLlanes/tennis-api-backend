@@ -12,6 +12,7 @@ import com.example.tennisBackendCode.model.Player;
 import com.example.tennisBackendCode.model.PlayerRank;
 import com.example.tennisBackendCode.model.PlayerStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -300,7 +301,12 @@ public class TennisRepo {
     public void insertPlayers(Player[] players) {
         for(Player player : players) {
             String insertPlayerSQL = "insert into atp_player_2 values (?, ?, ?);";
-            jdbc.update(insertPlayerSQL, player.getPlayerID(), player.getPlayerName(), player.getCountry());
+            try {
+                jdbc.update(insertPlayerSQL, player.getPlayerID(), player.getPlayerName(), player.getCountry());
+            }
+            catch (DataAccessException ex) {
+                //if primary key constraint is violated.
+            }
         }
     }
 
