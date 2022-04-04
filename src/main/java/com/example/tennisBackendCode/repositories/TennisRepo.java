@@ -271,10 +271,10 @@ public class TennisRepo {
         logger.info(date.toString());
         logger.info(Arrays.toString(matches));
         for(DailyMatchID match : matches) {
-            String sql = "insert into daily_matches values (?, ?, ?, ?, ?, ?);";
+            String sql = "insert into daily_matches values (?, ?, ?, ?, ?, ?, ?);";
             DailyMatch dm = convert(match);
             //update only if valid match returned
-            if(!(dm == null)) jdbc.update(sql, dm.getMatchDate(), dm.getTourneyName(), dm.getHomePlayer(), dm.getAwayPlayer(), dm.getWinnerName(), dm.getScore());
+            if(!(dm == null)) jdbc.update(sql, dm.getMatchDate(), dm.getTourneyName(), dm.getHomePlayer(), dm.getAwayPlayer(), dm.getWinnerName(), dm.getScore(), dm.getRound());
         }
         List<DailyMatch> l = jdbc.query("select * from daily_matches where tourney_date = ?", new DailyMatchRowMapper(), date);
         return l;
@@ -298,7 +298,7 @@ public class TennisRepo {
         String awayPlayer = awayQuery.get(0);
         String winnerName = winnerQuery.get(0);
 
-        return new DailyMatch(dmID.getMatchDate(), dmID.getTourneyName(), homePlayer, awayPlayer, winnerName, dmID.getScore());
+        return new DailyMatch(dmID.getMatchDate(), dmID.getTourneyName(), homePlayer, awayPlayer, winnerName, dmID.getScore(), dmID.getRound());
     }
 
     public ArrayList<String> getAllPlayerNames() {

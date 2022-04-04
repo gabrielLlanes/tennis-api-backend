@@ -7,15 +7,17 @@ public class DailyMatchID {
     private int awayID;
     private int winnerID;
     private String score;
+    String round;
 
     public DailyMatchID(java.sql.Date matchDate, String tourneyName, int homeID, int awayID, int winnerID,
-    String score) {
+    String score, String round) {
         this.matchDate=matchDate;
         this.tourneyName=tourneyName;
         this.homeID = homeID;
         this.awayID = awayID;
         this.winnerID = winnerID;
         this.score=score;
+        this.round=round;
     }
 
     public DailyMatchID() {}
@@ -55,6 +57,12 @@ public class DailyMatchID {
     }
     public String getScore() {
         return score;
+    }
+    public void setRound(String round) {
+        this.round = round;
+    }
+    public String getRound() {
+        return round;
     }
     public String toString() {
         return matchDate.toString() + tourneyName + homeID + awayID + winnerID + score;
