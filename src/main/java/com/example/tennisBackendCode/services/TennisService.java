@@ -3,6 +3,7 @@ package com.example.tennisBackendCode.services;
 import com.example.tennisBackendCode.miscTools.comparators.SingleTournamentMatchComparator;
 import com.example.tennisBackendCode.model.DailyMatch;
 import com.example.tennisBackendCode.model.DailyMatchID;
+import com.example.tennisBackendCode.model.DailyMatches;
 import com.example.tennisBackendCode.model.Match;
 import com.example.tennisBackendCode.model.Player;
 import com.example.tennisBackendCode.model.PlayerActivitySingleTournament;
@@ -80,10 +81,10 @@ public class TennisService {
     public void insertPlayers(Player[] players) {
         tennisRepo.insertPlayers(players);
     }
-    public List<DailyMatch> getDailyMatchesGet(java.sql.Date date) {
+    public DailyMatches getDailyMatchesGet(java.sql.Date date) {
         return tennisRepo.getDailyMatchesGet(date);
     }
-    public List<DailyMatch> getDailyMatchesPost(DailyMatchID[] matches, java.sql.Date date) {
+    public DailyMatches getDailyMatchesPost(DailyMatchID[] matches, java.sql.Date date) {
         return tennisRepo.getDailyMatchesPost(matches, date);
     } 
     public List<PlayerRank> getRankings() {

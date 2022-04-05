@@ -3,6 +3,7 @@ package com.example.tennisBackendCode.controllers;
 import com.example.tennisBackendCode.miscTools.requestBodies.Head2Head;
 import com.example.tennisBackendCode.model.DailyMatch;
 import com.example.tennisBackendCode.model.DailyMatchID;
+import com.example.tennisBackendCode.model.DailyMatches;
 import com.example.tennisBackendCode.model.Match;
 import com.example.tennisBackendCode.model.Player;
 import com.example.tennisBackendCode.model.PlayerActivitySingleTournament;
@@ -56,11 +57,11 @@ public class TennisRestController {
         tennisService.insertPlayers(players);
     }
     @GetMapping("/api/dailysummary")
-    public List<DailyMatch> getDailyMatches(@RequestParam("date") java.sql.Date date) {
+    public DailyMatches getDailyMatches(@RequestParam("date") java.sql.Date date) {
         return tennisService.getDailyMatchesGet(date);
     }
     @PostMapping("/api/dailysummary")
-    public List<DailyMatch> getDailyMatches(@RequestBody DailyMatchID[] matches, @RequestParam("date") java.sql.Date date) {
+    public DailyMatches getDailyMatches(@RequestBody DailyMatchID[] matches, @RequestParam("date") java.sql.Date date) {
         for(DailyMatchID match : matches) {
             match.setMatchDate(date);
         }

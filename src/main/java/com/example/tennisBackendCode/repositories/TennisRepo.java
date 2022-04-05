@@ -7,6 +7,7 @@ import com.example.tennisBackendCode.miscTools.rowMappers.PlayerRankingRowMapper
 import com.example.tennisBackendCode.miscTools.rowMappers.PlayerStatisticsRowMapper;
 import com.example.tennisBackendCode.model.DailyMatch;
 import com.example.tennisBackendCode.model.DailyMatchID;
+import com.example.tennisBackendCode.model.DailyMatches;
 import com.example.tennisBackendCode.model.Match;
 import com.example.tennisBackendCode.model.Player;
 import com.example.tennisBackendCode.model.PlayerRank;
@@ -17,6 +18,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -261,15 +263,34 @@ public class TennisRepo {
         String sql = "select * from atp_ranking";
         return jdbc.query(sql, new PlayerRankingRowMapper());
     }
-    public List<DailyMatch> getDailyMatchesGet(java.sql.Date date) {
-        String sql = "select * from daily_matches where tourney_date = ?";
-        List<DailyMatch> l = jdbc.query(sql, new DailyMatchRowMapper(), date);
-        return l;
+    public DailyMatches getDailyMatchesGet(java.sql.Date date) {
+        
+        boolean checkForRecordedDate = jdbc.query("select * from daily_matches_record_date where record_date = ?", 
+        new RowMapper<java.sql.Date>() {
+
+            @Override
+            public Date mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getDate(1);
+            }
+            
+        }, date).size() == 1; //check if a request has already been sent for daily matches
+
+        if(checkForRecordedDate) {
+            String sql = "select * from daily_matches where tourney_date = ?";
+            List<DailyMatch> l = jdbc.query(sql, new DailyMatchRowMapper(), date);
+            return new DailyMatches(date, true, l);
+        }
+        else {
+            return new DailyMatches(date, false, null);
+        }
     }
-    public List<DailyMatch> getDailyMatchesPost(DailyMatchID[] matches, java.sql.Date date) {
+    public DailyMatches getDailyMatchesPost(DailyMatchID[] matches, java.sql.Date date) {
         logger.info(String.format("%d", matches.length));
         logger.info(date.toString());
         logger.info(Arrays.toString(matches));
+
+        jdbc.update("insert into daily_matches_record_date values (?);", date);
+
         for(DailyMatchID match : matches) {
             String sql = "insert into daily_matches values (?, ?, ?, ?, ?, ?, ?);";
             DailyMatch dm = convert(match);
@@ -277,7 +298,8 @@ public class TennisRepo {
             if(!(dm == null)) jdbc.update(sql, dm.getMatchDate(), dm.getTourneyName(), dm.getHomePlayer(), dm.getAwayPlayer(), dm.getWinnerName(), dm.getScore(), dm.getRound());
         }
         List<DailyMatch> l = jdbc.query("select * from daily_matches where tourney_date = ?", new DailyMatchRowMapper(), date);
-        return l;
+
+        return new DailyMatches(date, true, l);
     }
     private DailyMatch convert(DailyMatchID dmID) {
         String queryForNameByID = "select player_name from atp_player_2 where player_id = ?";
