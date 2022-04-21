@@ -42,6 +42,10 @@ public class PlayerStatistics {
 
     }
 
+    public PlayerStatistics() {
+        this.careerWins = -1;
+    }
+
     public void setCareerWins(short careerWins) {
         this.careerWins = careerWins;
     }

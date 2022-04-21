@@ -48,6 +48,14 @@ public class TennisRepo {
     }
 
     public PlayerStatistics getPlayerStatisticsByName(String playerName) {
+        //first check if player selection is invalid
+
+        String checkForInvalid = "select * from atp_match_overview where (winner_name ilike ? or loser_name ilike ?);";
+
+        if(jdbc.query(checkForInvalid, new MatchRowMapper(), playerName, playerName).size() == 0) {
+            return new PlayerStatistics();
+        }
+
         String sql = "with indwins as\n" +
                 "(select * from atp_match where winner_name ilike ?),\n" +
                 "indlosses as\n" +
